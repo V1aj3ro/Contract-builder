@@ -7,6 +7,7 @@ from app.database import AsyncSessionLocal
 from app.models.contract import Contract
 from app.schemas.contract import ContractCreate
 from app.services.generator import generate_contract
+from urllib.parse import quot
 
 router = APIRouter()
 
@@ -57,6 +58,7 @@ async def delete_contract(contract_id: int, db: AsyncSession = Depends(get_db)):
 
 @router.get("/contracts/{contract_id}/generate")
 async def generate(contract_id: int, db: AsyncSession = Depends(get_db)):
+    from urllib.parse import quote
     result = await db.execute(
         select(Contract)
         .options(selectinload(Contract.customer))
@@ -69,8 +71,9 @@ async def generate(contract_id: int, db: AsyncSession = Depends(get_db)):
     docx_bytes = generate_contract(contract, contract.customer)
 
     filename = f"contract_{contract.number.replace('/', '-')}.docx"
+    filename_encoded = quote(filename)
     return Response(
         content=docx_bytes,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename_encoded}"}
     )
