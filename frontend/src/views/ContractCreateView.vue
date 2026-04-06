@@ -29,6 +29,14 @@
 
     <section>
       <h2>Исполнитель</h2>
+      <label>Выбрать из справочника
+        <select @change="onContractorSelect">
+            <option value="">— выбрать —</option>
+            <option v-for="c in contractors" :key="c.id" :value="c.id">
+                {{ c.full_name }} ({{ c.disciplines.map((d: any) => d.code).join(', ') }})
+            </option>
+        </select>
+      </label>
       <label>ФИО / Название <input v-model="form.contractor_full_name" type="text" /></label>
       <label>ИНН <input v-model="form.contractor_inn" type="text" /></label>
       <label>ОГРН <input v-model="form.contractor_ogrn" type="text" /></label>
@@ -140,7 +148,39 @@
 import { reactive, ref, onMounted } from 'vue'
 import api from '@/api/index'
 
+const contractors = ref([])
 const customers = ref([])
+
+async function onContractorSelect(event: Event) {
+  const id = parseInt((event.target as HTMLSelectElement).value)
+  if (!id) return
+  const response = await api.get(`/contractors/${id}`)
+  const c = response.data
+  form.contractor_keycloak_id = String(c.id)
+  form.contractor_full_name = c.full_name
+  form.contractor_inn = c.inn
+  form.contractor_ogrn = c.ogrn
+  form.contractor_is_individual = c.is_individual
+  form.contractor_legal_address = c.legal_address
+  form.contractor_bank_name = c.bank_name
+  form.contractor_bik = c.bik
+  form.contractor_account = c.account
+  form.contractor_corr_account = c.corr_account
+  form.contractor_phone = c.phone || ''
+  if (c.discipline_ids && c.discipline_ids.length > 0) {
+    try {
+    const worksResponse = await api.get('/disciplines')
+    const allDisciplines = worksResponse.data
+    const contractorDisciplines = allDisciplines.filter((d: any) =>
+        c.discipline_ids.includes(d.id)
+    )
+    const works = contractorDisciplines.flatMap((d: any) => d.works.map((w: any) => `- ${w.text}`))
+    form.works_text = works.join('\n')
+    } catch(e) {
+    console.error('works error:', e)
+    }
+  }
+}
 const hasTranch2 = ref(false)
 const hasTranch3 = ref(false)
 
@@ -185,6 +225,8 @@ const form = reactive({
 onMounted(async () => {
   const response = await api.get('/customers')
   customers.value = response.data
+  const contractorsResponse = await api.get('/contractors')
+  contractors.value = contractorsResponse.data
 })
 
 const createdId = ref<number | null>(null)
