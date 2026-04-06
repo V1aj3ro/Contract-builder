@@ -25,7 +25,7 @@
           <td>{{ contract.contractor_full_name }}</td>
           <td>{{ contract.amount }}</td>
           <td>
-            <a :href="`http://127.0.0.1:8000/api/contracts/${contract.id}/generate`" target="_blank">
+            <a :href="`/api/contracts/${contract.id}/generate`"`" target="_blank">
               Скачать
             </a>
           </td>

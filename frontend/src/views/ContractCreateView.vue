@@ -173,12 +173,12 @@
 
     <div v-if="createdId" style="margin-top:16px">
       <p>✅ Договор создан!</p>
-      <a :href="`http://127.0.0.1:8000/api/contracts/${createdId}/generate`" target="_blank" role="button">
+      <a :href="`/api/contracts/${contract.id}/generate`" target="_blank" role="button">
         Скачать DOCX
       </a>
     </div>
   </div>
-</template>
+</template> 
 
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
