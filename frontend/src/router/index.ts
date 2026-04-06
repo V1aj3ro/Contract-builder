@@ -5,6 +5,8 @@ import ContractCreateView from '@/views/ContractCreateView.vue'
 import ContractsListView from '@/views/ContractsListView.vue'
 import ContractorsView from '@/views/ContractorsView.vue'
 import ContractorView from '@/views/ContractorView.vue'
+import ObjectsView from '@/views/ObjectsView.vue'
+import ObjectView from '@/views/ObjectView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +40,16 @@ const router = createRouter({
       path: '/contractors/:id',
       name: 'contractor',
       component: ContractorView
+    },
+    {
+      path: '/objects',
+      name: 'objects',
+      component: ObjectsView
+    },
+    {
+      path: '/objects/:id',
+      name: 'object',
+      component: ObjectView
     }
   ]
 })

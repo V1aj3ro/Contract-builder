@@ -190,6 +190,8 @@ const hasTranch2 = ref(false)
 const hasTranch3 = ref(false)
 const createdId = ref<number | null>(null)
 const errors = reactive<Record<string, string>>({})
+import { useRoute } from 'vue-router'
+const route = useRoute()
 
 const form = reactive({
   number: '',
@@ -282,6 +284,45 @@ onMounted(async () => {
   customers.value = response.data
   const contractorsResponse = await api.get('/contractors')
   contractors.value = contractorsResponse.data
+  const objectId = route.query.object_id
+  const contractorId = route.query.contractor_id
+
+  if (objectId) {
+    const objResponse = await api.get(`/objects/${objectId}`)
+    const obj = objResponse.data
+    form.object_full_name = obj.full_name
+    form.object_address = obj.address || ''
+    form.basis_enabled = obj.basis_enabled
+    form.basis_type = obj.basis_type || ''
+    form.basis_number = obj.basis_number || ''
+    form.basis_date = obj.basis_date || ''
+  }
+
+  if (contractorId) {
+    const cResponse = await api.get(`/contractors/${contractorId}`)
+    const c = cResponse.data
+    form.contractor_keycloak_id = String(c.id)
+    form.contractor_full_name = c.full_name
+    form.contractor_inn = c.inn
+    form.contractor_ogrn = c.ogrn
+    form.contractor_is_individual = c.is_individual
+    form.contractor_legal_address = c.legal_address
+    form.contractor_bank_name = c.bank_name
+    form.contractor_bik = c.bik
+    form.contractor_account = c.account
+    form.contractor_corr_account = c.corr_account
+    form.contractor_phone = c.phone || ''
+    if (c.discipline_ids && c.discipline_ids.length > 0) {
+      const worksResponse = await api.get(`/contractors/${contractorId}`)
+      const contractorData = worksResponse.data
+      const works: string[] = []
+      for (const d of contractorData.disciplines) {
+        const disciplineWorks = contractorData.works_by_discipline[d.id] || []
+        disciplineWorks.forEach((w: any) => works.push(`- ${w.text}`))
+      }
+      form.works_text = works.join('\n')
+    }
+  }
 })
 
 async function submitForm() {

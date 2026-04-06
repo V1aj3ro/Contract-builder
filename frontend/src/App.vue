@@ -10,6 +10,7 @@
         <li><RouterLink to="/customers">Заказчики</RouterLink></li>
         <li><RouterLink to="/disciplines">Дисциплины</RouterLink></li>
         <li><RouterLink to="/contracts/new"><strong>+ Новый договор</strong></RouterLink></li>
+        <li><RouterLink to="/objects">Объекты</RouterLink></li>
       </ul>
     </nav>
   </header>
