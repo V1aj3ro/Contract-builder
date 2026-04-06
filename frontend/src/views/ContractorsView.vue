@@ -35,8 +35,8 @@
           ИП (не ООО)
         </label>
         <div class="grid">
-          <label>ФИО / Название <input v-model="form.full_name" type="text" placeholder="ИП Ершов Дмитрий Игоревич" /></label>
-          <label>Краткое (Ершов Д.И.) <input v-model="form.short_name" type="text" /></label>
+          <label>ФИО / Название <input v-model="form.full_name" type="text" placeholder="ИП Иванов Иван Иванович" /></label>
+          <label>Краткое (Иванов И.И.) <input v-model="form.short_name" type="text" /></label>
         </div>
         <div class="grid">
           <label>ИНН <input v-model="form.inn" type="text" /></label>

@@ -33,11 +33,11 @@
           ИП (не ООО)
         </label>
         <div class="grid">
-          <label>Полное название <input v-model="form.full_name" type="text" placeholder="ООО «Знамя архитектуры»" /></label>
-          <label>Краткое название <input v-model="form.short_name" type="text" placeholder="Знамя архитектуры" /></label>
+          <label>Полное название <input v-model="form.full_name" type="text" placeholder="ООО «НовосибирскСтрой»" /></label>
+          <label>Краткое название <input v-model="form.short_name" type="text" placeholder="НовосибирскСтрой" /></label>
         </div>
         <label>Полное название с расшифровкой
-          <input v-model="form.full_name_extended" type="text" placeholder="Общество с ограниченной ответственностью «Знамя архитектуры»" />
+          <input v-model="form.full_name_extended" type="text" placeholder="Общество с ограниченной ответственностью «НовосибирскСтрой»" />
         </label>
         <div class="grid">
           <label>ИНН <input v-model="form.inn" type="text" /></label>
@@ -54,8 +54,8 @@
           <label>К/с <input v-model="form.corr_account" type="text" /></label>
         </div>
         <div class="grid">
-          <label>Подписант (именит.) <input v-model="form.signer_name" type="text" placeholder="Дьяченко Ольга Николаевна" /></label>
-          <label>Подписант (родит.) <input v-model="form.signer_name_genitive" type="text" placeholder="Дьяченко Ольги Николаевны" /></label>
+          <label>Подписант (именит.) <input v-model="form.signer_name" type="text" placeholder="Иванов Иван Иванович" /></label>
+          <label>Подписант (родит.) <input v-model="form.signer_name_genitive" type="text" placeholder="Иванова Ивана Ивановича" /></label>
         </div>
         <div class="grid">
           <label>Должность (родит.) <input v-model="form.signer_role" type="text" placeholder="директора" /></label>
