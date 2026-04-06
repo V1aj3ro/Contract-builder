@@ -37,6 +37,7 @@
       <label>БИК <input v-model="form.contractor_bik" type="text" /></label>
       <label>Р/с <input v-model="form.contractor_account" type="text" /></label>
       <label>К/с <input v-model="form.contractor_corr_account" type="text" /></label>
+      <label>Телефон <input v-model="form.contractor_phone" type="text" placeholder="+7-952-906-44-11" /></label>
       <label>
         <input v-model="form.contractor_is_individual" type="checkbox" />
         ИП (не ООО)
@@ -108,11 +109,19 @@
     </section>
 
     <section>
-      <h2>Объём работ</h2>
-      <textarea v-model="form.works_text" rows="6" placeholder="Перечень работ..."></textarea>
-      <label>Доп. условия (необязательно)
-        <textarea v-model="form.extra_conditions" rows="3"></textarea>
-      </label>
+        <h2>Объём работ</h2>
+        <label>Перечень работ
+            <textarea v-model="form.works_text" rows="6" placeholder="- разработка проектной документации..."></textarea>
+        </label>
+        <label>Стадийность проектирования (необязательно)
+            <input v-model="form.works_stages" type="text" placeholder="Проектная и рабочая документация" />
+        </label>
+        <label>Результаты работ (необязательно)
+            <textarea v-model="form.works_results" rows="4" placeholder="- чертежи..."></textarea>
+        </label>
+        <label>Доп. условия (необязательно)
+            <textarea v-model="form.extra_conditions" rows="3"></textarea>
+        </label>
     </section>
 
     <button @click="submitForm">Создать договор</button>
@@ -162,6 +171,9 @@ const form = reactive({
   tranch3_condition: null,
   works_text: '',
   extra_conditions: '',
+  works_stages: '',
+  works_results: '',
+  contractor_phone: '',
 })
 
 onMounted(async () => {

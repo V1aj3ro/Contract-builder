@@ -21,6 +21,7 @@ class ContractCreate(BaseModel):
     contractor_bik: str
     contractor_account: str
     contractor_corr_account: str
+    contractor_phone: Optional[str] = None
 
     object_full_name: str
     object_address: Optional[str] = None
@@ -45,3 +46,5 @@ class ContractCreate(BaseModel):
 
     extra_conditions: Optional[str] = None
     works_text: str
+    works_stages: Optional[str] = None
+    works_results: Optional[str] = None

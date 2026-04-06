@@ -10,19 +10,21 @@ class Customer(Base):
     __tablename__ = "customers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    is_individual: Mapped[bool] = mapped_column(Boolean, default=False)  # True = ИП
-    full_name: Mapped[str] = mapped_column(String(255))   # ООО «Знамя архитектуры»
-    short_name: Mapped[str] = mapped_column(String(255))  # Знамя архитектуры
+    is_individual: Mapped[bool] = mapped_column(Boolean, default=False)  
+    full_name: Mapped[str] = mapped_column(String(255))   
+    short_name: Mapped[str] = mapped_column(String(255)) 
     inn: Mapped[str] = mapped_column(String(12))
     ogrn: Mapped[str] = mapped_column(String(15))
-    kpp: Mapped[str | None] = mapped_column(String(9), nullable=True)  # нет у ИП
+    kpp: Mapped[str | None] = mapped_column(String(9), nullable=True) 
     legal_address: Mapped[str] = mapped_column(String(500))
     bank_name: Mapped[str] = mapped_column(String(255))
     bik: Mapped[str] = mapped_column(String(9))
     account: Mapped[str] = mapped_column(String(20))
     corr_account: Mapped[str] = mapped_column(String(20))
-    signer_name: Mapped[str] = mapped_column(String(255))  # Дьяченко О.Н.
-    signer_role: Mapped[str | None] = mapped_column(String(100), nullable=True)  # директор
+    signer_name: Mapped[str] = mapped_column(String(255)) 
+    signer_name_genitive: Mapped[str | None] = mapped_column(String(255), nullable=True)  
+    signer_role: Mapped[str | None] = mapped_column(String(100), nullable=True) 
+    signer_role_nominative: Mapped[str | None] = mapped_column(String(100), nullable=True)  
 
     contracts: Mapped[list["Contract"]] = relationship(back_populates="customer")
 
@@ -32,8 +34,8 @@ class Discipline(Base):
     __tablename__ = "disciplines"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    code: Mapped[str] = mapped_column(String(20), unique=True)  # АР
-    name: Mapped[str] = mapped_column(String(255))              # Архитектурные решения
+    code: Mapped[str] = mapped_column(String(20), unique=True)  
+    name: Mapped[str] = mapped_column(String(255))              
 
     works: Mapped[list["WorkTemplate"]] = relationship(back_populates="discipline")
 
@@ -44,7 +46,7 @@ class WorkTemplate(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     discipline_id: Mapped[int] = mapped_column(ForeignKey("disciplines.id"))
-    text: Mapped[str] = mapped_column(Text)  # описание работы
+    text: Mapped[str] = mapped_column(Text)  
 
     discipline: Mapped["Discipline"] = relationship(back_populates="works")
 
@@ -72,6 +74,7 @@ class Contract(Base):
     contractor_bik: Mapped[str] = mapped_column(String(9))
     contractor_account: Mapped[str] = mapped_column(String(20))
     contractor_corr_account: Mapped[str] = mapped_column(String(20))
+    contractor_phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
     # Объект
     object_full_name: Mapped[str] = mapped_column(String(500))
@@ -102,4 +105,6 @@ class Contract(Base):
     # Доп. условия
     extra_conditions: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    works_text: Mapped[str] = mapped_column(Text)  # итоговый текст объёма работ
+    works_text: Mapped[str] = mapped_column(Text)  # объём работ
+    works_stages: Mapped[str | None] = mapped_column(Text, nullable=True)  # стадийность проектирования
+    works_results: Mapped[str | None] = mapped_column(Text, nullable=True)  # результаты работ
