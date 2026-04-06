@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h1>Исполнители</h1>
-    <button @click="showForm = true; resetForm()">+ Добавить исполнителя</button>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Исполнители</h1>
+      <button @click="showForm = true; resetForm()">+ Добавить исполнителя</button>
+    </div>
 
     <table>
       <thead>
@@ -19,43 +21,52 @@
           <td>{{ c.inn }}</td>
           <td>{{ c.disciplines.map((d: any) => d.code).join(', ') }}</td>
           <td>{{ c.phone }}</td>
-          <td><button @click="editContractor(c.id)">Редактировать</button></td>
+          <td><button class="secondary" style="width:auto;padding:4px 12px" @click="editContractor(c.id)">Редактировать</button></td>
         </tr>
       </tbody>
     </table>
 
-    <div v-if="showForm">
-      <h2>{{ editId ? 'Редактировать исполнителя' : 'Новый исполнитель' }}</h2>
+    <dialog :open="showForm">
+      <article>
+        <h2>{{ editId ? 'Редактировать исполнителя' : 'Новый исполнитель' }}</h2>
 
-      <label><input v-model="form.is_individual" type="checkbox" /> ИП (не ООО)</label>
-      <label>ФИО / Название <input v-model="form.full_name" type="text" placeholder="ИП Ершов Дмитрий Игоревич" /></label>
-      <label>Краткое (Ершов Д.И.) <input v-model="form.short_name" type="text" /></label>
-      <label>ИНН <input v-model="form.inn" type="text" /></label>
-      <label>ОГРН <input v-model="form.ogrn" type="text" /></label>
-      <label>Юр. адрес <input v-model="form.legal_address" type="text" /></label>
-      <label>Банк <input v-model="form.bank_name" type="text" /></label>
-      <label>БИК <input v-model="form.bik" type="text" /></label>
-      <label>Р/с <input v-model="form.account" type="text" /></label>
-      <label>К/с <input v-model="form.corr_account" type="text" /></label>
-      <label>Телефон <input v-model="form.phone" type="text" /></label>
+        <label>
+          <input v-model="form.is_individual" type="checkbox" />
+          ИП (не ООО)
+        </label>
+        <div class="grid">
+          <label>ФИО / Название <input v-model="form.full_name" type="text" placeholder="ИП Ершов Дмитрий Игоревич" /></label>
+          <label>Краткое (Ершов Д.И.) <input v-model="form.short_name" type="text" /></label>
+        </div>
+        <div class="grid">
+          <label>ИНН <input v-model="form.inn" type="text" /></label>
+          <label>ОГРН <input v-model="form.ogrn" type="text" /></label>
+          <label>Телефон <input v-model="form.phone" type="text" /></label>
+        </div>
+        <label>Юр. адрес <input v-model="form.legal_address" type="text" /></label>
+        <div class="grid">
+          <label>Банк <input v-model="form.bank_name" type="text" /></label>
+          <label>БИК <input v-model="form.bik" type="text" /></label>
+        </div>
+        <div class="grid">
+          <label>Р/с <input v-model="form.account" type="text" /></label>
+          <label>К/с <input v-model="form.corr_account" type="text" /></label>
+        </div>
 
-      <div>
-        <strong>Дисциплины:</strong>
-        <div v-for="d in disciplines" :key="d.id">
-          <label>
-            <input
-              type="checkbox"
-              :value="d.id"
-              v-model="form.discipline_ids"
-            />
+        <fieldset>
+          <legend>Дисциплины</legend>
+          <label v-for="d in disciplines" :key="d.id" style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <input type="checkbox" :value="d.id" v-model="form.discipline_ids" style="width:auto;margin:0" />
             {{ d.code }} — {{ d.name }}
           </label>
-        </div>
-      </div>
+        </fieldset>
 
-      <button @click="saveContractor">Сохранить</button>
-      <button @click="showForm = false">Отмена</button>
-    </div>
+        <footer>
+          <button @click="saveContractor">Сохранить</button>
+          <button class="secondary" @click="showForm = false">Отмена</button>
+        </footer>
+      </article>
+    </dialog>
   </div>
 </template>
 
