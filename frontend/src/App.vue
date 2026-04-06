@@ -1,6 +1,8 @@
 <template>
   <nav>
-    <RouterLink to="/">Заказчики</RouterLink>
+    <RouterLink to="/">Договоры</RouterLink>
+    |
+    <RouterLink to="/customers">Заказчики</RouterLink>
     |
     <RouterLink to="/disciplines">Дисциплины</RouterLink>
     |

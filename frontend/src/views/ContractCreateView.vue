@@ -125,6 +125,12 @@
     </section>
 
     <button @click="submitForm">Создать договор</button>
+    <div v-if="createdId">
+        ✅ Договор создан!
+        <a :href="`http://127.0.0.1:8000/api/contracts/${createdId}/generate`" target="_blank">
+            Скачать DOCX
+        </a>
+    </div>
 
     <pre>{{ form }}</pre>
   </div>
@@ -181,11 +187,13 @@ onMounted(async () => {
   customers.value = response.data
 })
 
+const createdId = ref<number | null>(null)
+
 async function submitForm() {
   const payload = { ...form }
   if (!hasTranch2.value) { payload.tranch2_pct = null; payload.tranch2_condition = null }
   if (!hasTranch3.value) { payload.tranch3_pct = null; payload.tranch3_condition = null }
   const response = await api.post('/contracts', payload)
-  alert(`Договор создан, ID: ${response.data.id}`)
+  createdId.value = response.data.id
 }
 </script>
