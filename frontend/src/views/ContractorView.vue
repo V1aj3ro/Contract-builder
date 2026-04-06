@@ -38,6 +38,26 @@
           </tbody>
         </table>
       </article>
+
+      <article>
+        <h3>Объекты</h3>
+        <p v-if="!contractor.objects?.length" style="color:gray">Нет объектов</p>
+        <table v-else>
+          <thead>
+            <tr><th>Название</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="o in contractor.objects" :key="o.id">
+              <td>{{ o.short_name }}</td>
+              <td>
+                <RouterLink :to="`/objects/${o.id}`">
+                  <button class="secondary" style="width:auto;padding:4px 12px">Открыть</button>
+                </RouterLink>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
     </div>
 
     <article>

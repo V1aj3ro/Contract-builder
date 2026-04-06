@@ -6,6 +6,7 @@ from app.database import AsyncSessionLocal
 from app.models.contractor import Contractor
 from app.models.contractor_work import ContractorWork
 from app.models.contract import Discipline, Contract
+from app.models.project_object import ProjectObject
 from pydantic import BaseModel
 from typing import Optional
 
@@ -88,6 +89,19 @@ async def get_contractor(contractor_id: int, db: AsyncSession = Depends(get_db))
     )
     contracts = contracts_result.scalars().all()
 
+    # Объекты исполнителя
+    objects_result = await db.execute(
+        select(ProjectObject)
+        .where(ProjectObject.is_active == True)
+        .options(selectinload(ProjectObject.contractors))
+    )
+    all_objects = objects_result.scalars().all()
+    contractor_objects = [
+        {"id": o.id, "short_name": o.short_name, "full_name": o.full_name}
+        for o in all_objects
+        if any(c.id == contractor_id for c in o.contractors)
+    ]
+
     return {
         "id": contractor.id,
         "is_individual": contractor.is_individual,
@@ -115,6 +129,7 @@ async def get_contractor(contractor_id: int, db: AsyncSession = Depends(get_db))
             }
             for c in contracts
         ],
+        "objects": contractor_objects,
     }
 
 
@@ -127,7 +142,6 @@ async def create_contractor(data: ContractorCreate, db: AsyncSession = Depends(g
         result = await db.execute(select(Discipline).where(Discipline.id.in_(discipline_ids)))
         disciplines = result.scalars().all()
         contractor.disciplines = disciplines
-        # Копируем типовые работы из справочника
         for discipline in disciplines:
             works_result = await db.execute(
                 select(Discipline).where(Discipline.id == discipline.id)
