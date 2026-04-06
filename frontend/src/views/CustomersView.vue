@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h1>Заказчики</h1>
-    <button @click="showForm = true; resetForm()">+ Добавить заказчика</button>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Заказчики</h1>
+      <button @click="showForm = true; resetForm()">+ Добавить заказчика</button>
+    </div>
 
     <table>
       <thead>
@@ -17,34 +19,55 @@
           <td>{{ c.full_name }}</td>
           <td>{{ c.inn }}</td>
           <td>{{ c.is_individual ? 'ИП' : 'ООО/АО' }}</td>
-          <td><button @click="editCustomer(c.id)">Редактировать</button></td>
+          <td><button class="secondary" style="width:auto;padding:4px 12px" @click="editCustomer(c.id)">Редактировать</button></td>
         </tr>
       </tbody>
     </table>
 
-    <div v-if="showForm">
-      <h2>{{ editId ? 'Редактировать заказчика' : 'Новый заказчик' }}</h2>
+    <dialog :open="showForm">
+      <article>
+        <h2>{{ editId ? 'Редактировать заказчика' : 'Новый заказчик' }}</h2>
 
-      <label><input v-model="form.is_individual" type="checkbox" /> ИП (не ООО)</label>
-      <label>Полное название <input v-model="form.full_name" type="text" /></label>
-      <label>Полное название с расшифровкой <input v-model="form.full_name_extended" type="text" /></label>
-      <label>Краткое название <input v-model="form.short_name" type="text" /></label>
-      <label>ИНН <input v-model="form.inn" type="text" /></label>
-      <label>ОГРН <input v-model="form.ogrn" type="text" /></label>
-      <label>КПП (для ООО) <input v-model="form.kpp" type="text" /></label>
-      <label>Юр. адрес <input v-model="form.legal_address" type="text" /></label>
-      <label>Банк <input v-model="form.bank_name" type="text" /></label>
-      <label>БИК <input v-model="form.bik" type="text" /></label>
-      <label>Р/с <input v-model="form.account" type="text" /></label>
-      <label>К/с <input v-model="form.corr_account" type="text" /></label>
-      <label>Подписант (именительный) <input v-model="form.signer_name" type="text" placeholder="Дьяченко Ольга Николаевна" /></label>
-      <label>Подписант (родительный) <input v-model="form.signer_name_genitive" type="text" placeholder="Дьяченко Ольги Николаевны" /></label>
-      <label>Должность (родительный) <input v-model="form.signer_role" type="text" placeholder="директора" /></label>
-      <label>Должность (именительный) <input v-model="form.signer_role_nominative" type="text" placeholder="Директор" /></label>
+        <label>
+          <input v-model="form.is_individual" type="checkbox" />
+          ИП (не ООО)
+        </label>
+        <div class="grid">
+          <label>Полное название <input v-model="form.full_name" type="text" placeholder="ООО «Знамя архитектуры»" /></label>
+          <label>Краткое название <input v-model="form.short_name" type="text" placeholder="Знамя архитектуры" /></label>
+        </div>
+        <label>Полное название с расшифровкой
+          <input v-model="form.full_name_extended" type="text" placeholder="Общество с ограниченной ответственностью «Знамя архитектуры»" />
+        </label>
+        <div class="grid">
+          <label>ИНН <input v-model="form.inn" type="text" /></label>
+          <label>ОГРН <input v-model="form.ogrn" type="text" /></label>
+          <label>КПП (для ООО) <input v-model="form.kpp" type="text" /></label>
+        </div>
+        <label>Юр. адрес <input v-model="form.legal_address" type="text" /></label>
+        <div class="grid">
+          <label>Банк <input v-model="form.bank_name" type="text" /></label>
+          <label>БИК <input v-model="form.bik" type="text" /></label>
+        </div>
+        <div class="grid">
+          <label>Р/с <input v-model="form.account" type="text" /></label>
+          <label>К/с <input v-model="form.corr_account" type="text" /></label>
+        </div>
+        <div class="grid">
+          <label>Подписант (именит.) <input v-model="form.signer_name" type="text" placeholder="Дьяченко Ольга Николаевна" /></label>
+          <label>Подписант (родит.) <input v-model="form.signer_name_genitive" type="text" placeholder="Дьяченко Ольги Николаевны" /></label>
+        </div>
+        <div class="grid">
+          <label>Должность (родит.) <input v-model="form.signer_role" type="text" placeholder="директора" /></label>
+          <label>Должность (именит.) <input v-model="form.signer_role_nominative" type="text" placeholder="Директор" /></label>
+        </div>
 
-      <button @click="saveCustomer">Сохранить</button>
-      <button @click="showForm = false">Отмена</button>
-    </div>
+        <footer>
+          <button @click="saveCustomer">Сохранить</button>
+          <button class="secondary" @click="showForm = false">Отмена</button>
+        </footer>
+      </article>
+    </dialog>
   </div>
 </template>
 
