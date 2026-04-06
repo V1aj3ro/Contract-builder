@@ -10,12 +10,12 @@
 
     <div v-for="discipline in disciplines" :key="discipline.id" style="margin-top:16px">
       <strong>{{ discipline.code }} — {{ discipline.name }}</strong>
-      <button @click="deleteDiscipline(discipline.id)" style="margin-left:8px">✕</button>
+      <button class="delete-btn secondary" @click="deleteDiscipline(discipline.id)" style="margin-left:8px">✕</button>
 
       <ul>
         <li v-for="work in discipline.works" :key="work.id">
           {{ work.text }}
-          <button @click="deleteWork(discipline.id, work.id)">✕</button>
+          <button class="delete-btn secondary" @click="deleteWork(discipline.id, work.id)">✕</button>
         </li>
       </ul>
 
@@ -70,3 +70,13 @@ async function deleteWork(disciplineId: number, workId: number) {
 
 onMounted(loadDisciplines)
 </script>
+
+<style scoped>
+button.delete-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  width: auto;
+  display: inline;
+  margin: 0 0 0 8px;
+}
+</style>
