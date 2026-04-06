@@ -2,20 +2,22 @@
   <div>
     <h1>Новый договор</h1>
 
-    <section>
+    <article>
       <h2>Основные реквизиты</h2>
       <label>Номер договора
         <input v-model="form.number" type="text" placeholder="2025/12/16" />
       </label>
-      <label>Дата договора
-        <input v-model="form.date" type="date" />
-      </label>
-      <label>Город
-        <input v-model="form.city" type="text" />
-      </label>
-    </section>
+      <div class="grid">
+        <label>Дата договора
+          <input v-model="form.date" type="date" />
+        </label>
+        <label>Город
+          <input v-model="form.city" type="text" />
+        </label>
+      </div>
+    </article>
 
-    <section>
+    <article>
       <h2>Заказчик</h2>
       <label>Выберите заказчика
         <select v-model="form.customer_id">
@@ -25,34 +27,40 @@
           </option>
         </select>
       </label>
-    </section>
+    </article>
 
-    <section>
+    <article>
       <h2>Исполнитель</h2>
       <label>Выбрать из справочника
         <select @change="onContractorSelect">
-            <option value="">— выбрать —</option>
-            <option v-for="c in contractors" :key="c.id" :value="c.id">
-                {{ c.full_name }} ({{ c.disciplines.map((d: any) => d.code).join(', ') }})
-            </option>
+          <option value="">— выбрать —</option>
+          <option v-for="c in contractors" :key="c.id" :value="c.id">
+            {{ c.full_name }} ({{ c.disciplines.map((d: any) => d.code).join(', ') }})
+          </option>
         </select>
       </label>
-      <label>ФИО / Название <input v-model="form.contractor_full_name" type="text" /></label>
-      <label>ИНН <input v-model="form.contractor_inn" type="text" /></label>
-      <label>ОГРН <input v-model="form.contractor_ogrn" type="text" /></label>
+      <div class="grid">
+        <label>ФИО / Название <input v-model="form.contractor_full_name" type="text" /></label>
+        <label>ИНН <input v-model="form.contractor_inn" type="text" /></label>
+        <label>ОГРН <input v-model="form.contractor_ogrn" type="text" /></label>
+      </div>
       <label>Юр. адрес <input v-model="form.contractor_legal_address" type="text" /></label>
-      <label>Банк <input v-model="form.contractor_bank_name" type="text" /></label>
-      <label>БИК <input v-model="form.contractor_bik" type="text" /></label>
-      <label>Р/с <input v-model="form.contractor_account" type="text" /></label>
-      <label>К/с <input v-model="form.contractor_corr_account" type="text" /></label>
-      <label>Телефон <input v-model="form.contractor_phone" type="text" placeholder="+7-952-906-44-11" /></label>
+      <div class="grid">
+        <label>Банк <input v-model="form.contractor_bank_name" type="text" /></label>
+        <label>БИК <input v-model="form.contractor_bik" type="text" /></label>
+      </div>
+      <div class="grid">
+        <label>Р/с <input v-model="form.contractor_account" type="text" /></label>
+        <label>К/с <input v-model="form.contractor_corr_account" type="text" /></label>
+        <label>Телефон <input v-model="form.contractor_phone" type="text" /></label>
+      </div>
       <label>
         <input v-model="form.contractor_is_individual" type="checkbox" />
         ИП (не ООО)
       </label>
-    </section>
+    </article>
 
-    <section>
+    <article>
       <h2>Объект</h2>
       <label>Полное название объекта
         <input v-model="form.object_full_name" type="text" />
@@ -64,9 +72,9 @@
         <input v-model="form.basis_enabled" type="checkbox" />
         Есть основание (госконтракт / договор)
       </label>
-      <div v-if="form.basis_enabled">
+      <div v-if="form.basis_enabled" class="grid">
         <label>Тип основания
-          <input v-model="form.basis_type" type="text" placeholder="Муниципальный контракт" />
+          <input v-model="form.basis_type" type="text" placeholder="Муниципального контракта" />
         </label>
         <label>Номер
           <input v-model="form.basis_number" type="text" placeholder="№123/25" />
@@ -75,72 +83,73 @@
           <input v-model="form.basis_date" type="date" />
         </label>
       </div>
-    </section>
+    </article>
 
-    <section>
-      <h2>Сроки</h2>
-      <label>Дата начала <input v-model="form.date_start" type="date" /></label>
-      <label>Дата окончания <input v-model="form.date_end" type="date" /></label>
-    </section>
+    <article>
+      <h2>Сроки и стоимость</h2>
+      <div class="grid">
+        <label>Дата начала <input v-model="form.date_start" type="date" /></label>
+        <label>Дата окончания <input v-model="form.date_end" type="date" /></label>
+      </div>
+      <div class="grid">
+        <label>Сумма (руб.) <input v-model="form.amount" type="number" step="0.01" /></label>
+        <label style="display:flex;align-items:center;gap:8px;padding-top:24px">
+          <input v-model="form.vat_included" type="checkbox" />
+          НДС включён
+        </label>
+      </div>
+    </article>
 
-    <section>
-      <h2>Стоимость</h2>
-      <label>Сумма (руб.) <input v-model="form.amount" type="number" step="0.01" /></label>
-      <label>
-        <input v-model="form.vat_included" type="checkbox" />
-        НДС включён
-      </label>
-    </section>
-
-    <section>
+    <article>
       <h2>Транши</h2>
-      <label>Транш 1 (%) <input v-model="form.tranch1_pct" type="number" /></label>
-      <label>Условие <input v-model="form.tranch1_condition" type="text" /></label>
-
+      <div class="grid">
+        <label>Транш 1 (%) <input v-model="form.tranch1_pct" type="number" /></label>
+        <label>Условие <input v-model="form.tranch1_condition" type="text" placeholder="с момента заключения договора" /></label>
+      </div>
       <label>
         <input v-model="hasTranch2" type="checkbox" />
         Добавить транш 2
       </label>
-      <div v-if="hasTranch2">
+      <div v-if="hasTranch2" class="grid">
         <label>Транш 2 (%) <input v-model="form.tranch2_pct" type="number" /></label>
         <label>Условие <input v-model="form.tranch2_condition" type="text" /></label>
       </div>
-
       <label>
         <input v-model="hasTranch3" type="checkbox" />
         Добавить транш 3
       </label>
-      <div v-if="hasTranch3">
+      <div v-if="hasTranch3" class="grid">
         <label>Транш 3 (%) <input v-model="form.tranch3_pct" type="number" /></label>
         <label>Условие <input v-model="form.tranch3_condition" type="text" /></label>
       </div>
-    </section>
+    </article>
 
-    <section>
-        <h2>Объём работ</h2>
-        <label>Перечень работ
-            <textarea v-model="form.works_text" rows="6" placeholder="- разработка проектной документации..."></textarea>
+    <article>
+      <h2>Объём работ</h2>
+      <label>Перечень работ
+        <textarea v-model="form.works_text" rows="6" placeholder="- разработка проектной документации..."></textarea>
+      </label>
+      <div class="grid">
+        <label>Стадийность проектирования
+          <input v-model="form.works_stages" type="text" placeholder="Проектная и рабочая документация" />
         </label>
-        <label>Стадийность проектирования (необязательно)
-            <input v-model="form.works_stages" type="text" placeholder="Проектная и рабочая документация" />
-        </label>
-        <label>Результаты работ (необязательно)
-            <textarea v-model="form.works_results" rows="4" placeholder="- чертежи..."></textarea>
-        </label>
-        <label>Доп. условия (необязательно)
-            <textarea v-model="form.extra_conditions" rows="3"></textarea>
-        </label>
-    </section>
+      </div>
+      <label>Результаты работ
+        <textarea v-model="form.works_results" rows="4" placeholder="- чертежи..."></textarea>
+      </label>
+      <label>Доп. условия
+        <textarea v-model="form.extra_conditions" rows="3"></textarea>
+      </label>
+    </article>
 
     <button @click="submitForm">Создать договор</button>
-    <div v-if="createdId">
-        ✅ Договор создан!
-        <a :href="`http://127.0.0.1:8000/api/contracts/${createdId}/generate`" target="_blank">
-            Скачать DOCX
-        </a>
-    </div>
 
-    <pre>{{ form }}</pre>
+    <div v-if="createdId" style="margin-top:16px">
+      <p>✅ Договор создан!</p>
+      <a :href="`http://127.0.0.1:8000/api/contracts/${createdId}/generate`" target="_blank" role="button">
+        Скачать DOCX
+      </a>
+    </div>
   </div>
 </template>
 
@@ -148,8 +157,49 @@
 import { reactive, ref, onMounted } from 'vue'
 import api from '@/api/index'
 
-const contractors = ref([])
 const customers = ref([])
+const contractors = ref([])
+const hasTranch2 = ref(false)
+const hasTranch3 = ref(false)
+const createdId = ref<number | null>(null)
+
+const form = reactive({
+  number: '',
+  date: new Date().toISOString().split('T')[0],
+  city: 'г. Новосибирск',
+  customer_id: '',
+  contractor_keycloak_id: 'manual',
+  contractor_full_name: '',
+  contractor_inn: '',
+  contractor_ogrn: '',
+  contractor_is_individual: true,
+  contractor_legal_address: '',
+  contractor_bank_name: '',
+  contractor_bik: '',
+  contractor_account: '',
+  contractor_corr_account: '',
+  contractor_phone: '',
+  object_full_name: '',
+  object_address: '',
+  basis_enabled: false,
+  basis_type: '',
+  basis_number: '',
+  basis_date: '',
+  date_start: '',
+  date_end: '',
+  amount: '',
+  vat_included: false,
+  tranch1_pct: 30,
+  tranch1_condition: '',
+  tranch2_pct: null,
+  tranch2_condition: null,
+  tranch3_pct: null,
+  tranch3_condition: null,
+  works_text: '',
+  works_stages: 'Проектная и рабочая документация',
+  works_results: '',
+  extra_conditions: '',
+})
 
 async function onContractorSelect(event: Event) {
   const id = parseInt((event.target as HTMLSelectElement).value)
@@ -169,58 +219,18 @@ async function onContractorSelect(event: Event) {
   form.contractor_phone = c.phone || ''
   if (c.discipline_ids && c.discipline_ids.length > 0) {
     try {
-    const worksResponse = await api.get('/disciplines')
-    const allDisciplines = worksResponse.data
-    const contractorDisciplines = allDisciplines.filter((d: any) =>
+      const worksResponse = await api.get('/disciplines')
+      const allDisciplines = worksResponse.data
+      const contractorDisciplines = allDisciplines.filter((d: any) =>
         c.discipline_ids.includes(d.id)
-    )
-    const works = contractorDisciplines.flatMap((d: any) => d.works.map((w: any) => `- ${w.text}`))
-    form.works_text = works.join('\n')
+      )
+      const works = contractorDisciplines.flatMap((d: any) => d.works.map((w: any) => `- ${w.text}`))
+      form.works_text = works.join('\n')
     } catch(e) {
-    console.error('works error:', e)
+      console.error('works error:', e)
     }
   }
 }
-const hasTranch2 = ref(false)
-const hasTranch3 = ref(false)
-
-const form = reactive({
-  number: '',
-  date: new Date().toISOString().split('T')[0],
-  city: 'г. Новосибирск',
-  customer_id: '',
-  contractor_keycloak_id: 'manual',
-  contractor_full_name: '',
-  contractor_inn: '',
-  contractor_ogrn: '',
-  contractor_is_individual: true,
-  contractor_legal_address: '',
-  contractor_bank_name: '',
-  contractor_bik: '',
-  contractor_account: '',
-  contractor_corr_account: '',
-  object_full_name: '',
-  object_address: '',
-  basis_enabled: false,
-  basis_type: '',
-  basis_number: '',
-  basis_date: '',
-  date_start: '',
-  date_end: '',
-  amount: '',
-  vat_included: false,
-  tranch1_pct: 30,
-  tranch1_condition: '',
-  tranch2_pct: null,
-  tranch2_condition: null,
-  tranch3_pct: null,
-  tranch3_condition: null,
-  works_text: '',
-  extra_conditions: '',
-  works_stages: '',
-  works_results: '',
-  contractor_phone: '',
-})
 
 onMounted(async () => {
   const response = await api.get('/customers')
@@ -228,8 +238,6 @@ onMounted(async () => {
   const contractorsResponse = await api.get('/contractors')
   contractors.value = contractorsResponse.data
 })
-
-const createdId = ref<number | null>(null)
 
 async function submitForm() {
   const payload = { ...form }
