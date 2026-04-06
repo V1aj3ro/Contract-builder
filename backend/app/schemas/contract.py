@@ -48,3 +48,4 @@ class ContractCreate(BaseModel):
     works_text: str
     works_stages: Optional[str] = None
     works_results: Optional[str] = None
+    works_results_header: Optional[str] = None

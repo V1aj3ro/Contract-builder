@@ -11,7 +11,8 @@ class Customer(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     is_individual: Mapped[bool] = mapped_column(Boolean, default=False)  
-    full_name: Mapped[str] = mapped_column(String(255))   
+    full_name: Mapped[str] = mapped_column(String(255))
+    full_name_extended: Mapped[str | None] = mapped_column(String(500), nullable=True) 
     short_name: Mapped[str] = mapped_column(String(255)) 
     inn: Mapped[str] = mapped_column(String(12))
     ogrn: Mapped[str] = mapped_column(String(15))

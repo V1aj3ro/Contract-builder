@@ -70,13 +70,14 @@ def generate_contract(contract, customer) -> bytes:
         )
     else:
         signer_genitive = customer.signer_name_genitive or customer.signer_name
+        display_name = customer.full_name_extended or customer.full_name
         customer_preamble = (
-            f"{customer.full_name}, именуемое в дальнейшем «Заказчик», "
+            f"{display_name}, именуемое в дальнейшем «Заказчик», "
             f"в лице {customer.signer_role} {signer_genitive}, "
             f"действующего на основании Устава,"
         )
 
-    # Основание
+    
     if contract.basis_enabled and contract.basis_type and contract.basis_number:
         basis_text = (
             f"Работы выполняются во исполнение {contract.basis_type} "
@@ -89,16 +90,16 @@ def generate_contract(contract, customer) -> bytes:
     else:
         basis_text = ""
 
-    # НДС
+    
     vat_text = "НДС включён" if contract.vat_included else "НДС не предусмотрен"
 
-    # Сумма
+    
     amount_int = int(contract.amount)
 
-    # КПП только для ООО
+    
     customer_kpp_line = f"КПП {customer.kpp}" if customer.kpp else ""
 
-    # Подпись заказчика
+    
     signer_role_cap = (customer.signer_role or "").capitalize()
 
     context = {
@@ -133,7 +134,7 @@ def generate_contract(contract, customer) -> bytes:
         "contractor_account": contract.contractor_account,
         "contractor_corr_account": contract.contractor_corr_account,
         "contractor_signer_short": short_name(contract.contractor_full_name),
-        "contractor_phone": contract.contractor_phone or "",
+        "contractor_phone": f"Тел. {contract.contractor_phone}" if contract.contractor_phone else "",
 
         "object_full_name": contract.object_full_name,
         "basis_enabled": contract.basis_enabled,
@@ -154,7 +155,8 @@ def generate_contract(contract, customer) -> bytes:
         "has_tranch3": True,
         "has_tranch2": bool(contract.tranch2_pct and contract.tranch2_condition),
         "has_tranch3": bool(contract.tranch3_condition),
-        "works_stages": contract.works_stages or "",
+        "works_stages": f"Стадийность проектирования: {contract.works_stages}" if contract.works_stages else "",
+        "works_results_header": "Результаты работ в пределах указанного выше объёма работ:" if contract.works_results else "",
         "works_results": contract.works_results or "",
     }
 
