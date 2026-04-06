@@ -2,14 +2,20 @@
   <div>
     <h1>Новый договор</h1>
 
+    <div v-if="Object.keys(errors).length > 0" style="color:red;margin-bottom:16px">
+      ⚠️ Пожалуйста, заполните все обязательные поля
+    </div>
+
     <article>
       <h2>Основные реквизиты</h2>
       <label>Номер договора
-        <input v-model="form.number" type="text" placeholder="2025/12/16" />
+        <input v-model="form.number" type="text" placeholder="2025/12/16" :aria-invalid="!!errors.number" />
+        <small v-if="errors.number" style="color:red">{{ errors.number }}</small>
       </label>
       <div class="grid">
         <label>Дата договора
-          <input v-model="form.date" type="date" />
+          <input v-model="form.date" type="date" :aria-invalid="!!errors.date" />
+          <small v-if="errors.date" style="color:red">{{ errors.date }}</small>
         </label>
         <label>Город
           <input v-model="form.city" type="text" />
@@ -20,12 +26,13 @@
     <article>
       <h2>Заказчик</h2>
       <label>Выберите заказчика
-        <select v-model="form.customer_id">
+        <select v-model="form.customer_id" :aria-invalid="!!errors.customer_id">
           <option disabled value="">— выберите —</option>
           <option v-for="c in customers" :key="c.id" :value="c.id">
             {{ c.full_name }}
           </option>
         </select>
+        <small v-if="errors.customer_id" style="color:red">{{ errors.customer_id }}</small>
       </label>
     </article>
 
@@ -40,8 +47,14 @@
         </select>
       </label>
       <div class="grid">
-        <label>ФИО / Название <input v-model="form.contractor_full_name" type="text" /></label>
-        <label>ИНН <input v-model="form.contractor_inn" type="text" /></label>
+        <label>ФИО / Название
+          <input v-model="form.contractor_full_name" type="text" :aria-invalid="!!errors.contractor_full_name" />
+          <small v-if="errors.contractor_full_name" style="color:red">{{ errors.contractor_full_name }}</small>
+        </label>
+        <label>ИНН
+          <input v-model="form.contractor_inn" type="text" :aria-invalid="!!errors.contractor_inn" />
+          <small v-if="errors.contractor_inn" style="color:red">{{ errors.contractor_inn }}</small>
+        </label>
         <label>ОГРН <input v-model="form.contractor_ogrn" type="text" /></label>
       </div>
       <label>Юр. адрес <input v-model="form.contractor_legal_address" type="text" /></label>
@@ -63,7 +76,8 @@
     <article>
       <h2>Объект</h2>
       <label>Полное название объекта
-        <input v-model="form.object_full_name" type="text" />
+        <input v-model="form.object_full_name" type="text" :aria-invalid="!!errors.object_full_name" />
+        <small v-if="errors.object_full_name" style="color:red">{{ errors.object_full_name }}</small>
       </label>
       <label>Адрес объекта
         <input v-model="form.object_address" type="text" />
@@ -88,11 +102,20 @@
     <article>
       <h2>Сроки и стоимость</h2>
       <div class="grid">
-        <label>Дата начала <input v-model="form.date_start" type="date" /></label>
-        <label>Дата окончания <input v-model="form.date_end" type="date" /></label>
+        <label>Дата начала
+          <input v-model="form.date_start" type="date" :aria-invalid="!!errors.date_start" />
+          <small v-if="errors.date_start" style="color:red">{{ errors.date_start }}</small>
+        </label>
+        <label>Дата окончания
+          <input v-model="form.date_end" type="date" :aria-invalid="!!errors.date_end" />
+          <small v-if="errors.date_end" style="color:red">{{ errors.date_end }}</small>
+        </label>
       </div>
       <div class="grid">
-        <label>Сумма (руб.) <input v-model="form.amount" type="number" step="0.01" /></label>
+        <label>Сумма (руб.)
+          <input v-model="form.amount" type="number" step="0.01" :aria-invalid="!!errors.amount" />
+          <small v-if="errors.amount" style="color:red">{{ errors.amount }}</small>
+        </label>
         <label style="display:flex;align-items:center;gap:8px;padding-top:24px">
           <input v-model="form.vat_included" type="checkbox" />
           НДС включён
@@ -104,7 +127,10 @@
       <h2>Транши</h2>
       <div class="grid">
         <label>Транш 1 (%) <input v-model="form.tranch1_pct" type="number" /></label>
-        <label>Условие <input v-model="form.tranch1_condition" type="text" placeholder="с момента заключения договора" /></label>
+        <label>Условие
+          <input v-model="form.tranch1_condition" type="text" placeholder="с момента заключения договора" :aria-invalid="!!errors.tranch1_condition" />
+          <small v-if="errors.tranch1_condition" style="color:red">{{ errors.tranch1_condition }}</small>
+        </label>
       </div>
       <label>
         <input v-model="hasTranch2" type="checkbox" />
@@ -127,7 +153,8 @@
     <article>
       <h2>Объём работ</h2>
       <label>Перечень работ
-        <textarea v-model="form.works_text" rows="6" placeholder="- разработка проектной документации..."></textarea>
+        <textarea v-model="form.works_text" rows="6" placeholder="- разработка проектной документации..." :aria-invalid="!!errors.works_text"></textarea>
+        <small v-if="errors.works_text" style="color:red">{{ errors.works_text }}</small>
       </label>
       <div class="grid">
         <label>Стадийность проектирования
@@ -162,6 +189,7 @@ const contractors = ref([])
 const hasTranch2 = ref(false)
 const hasTranch3 = ref(false)
 const createdId = ref<number | null>(null)
+const errors = reactive<Record<string, string>>({})
 
 const form = reactive({
   number: '',
@@ -200,6 +228,22 @@ const form = reactive({
   works_results: '',
   extra_conditions: '',
 })
+
+function validate(): boolean {
+  Object.keys(errors).forEach(k => delete errors[k])
+  if (!form.number) errors.number = 'Укажите номер договора'
+  if (!form.date) errors.date = 'Укажите дату'
+  if (!form.customer_id) errors.customer_id = 'Выберите заказчика'
+  if (!form.contractor_full_name) errors.contractor_full_name = 'Укажите исполнителя'
+  if (!form.contractor_inn) errors.contractor_inn = 'Укажите ИНН исполнителя'
+  if (!form.object_full_name) errors.object_full_name = 'Укажите название объекта'
+  if (!form.date_start) errors.date_start = 'Укажите дату начала'
+  if (!form.date_end) errors.date_end = 'Укажите дату окончания'
+  if (!form.amount) errors.amount = 'Укажите сумму'
+  if (!form.tranch1_condition) errors.tranch1_condition = 'Укажите условие первого транша'
+  if (!form.works_text) errors.works_text = 'Укажите объём работ'
+  return Object.keys(errors).length === 0
+}
 
 async function onContractorSelect(event: Event) {
   const id = parseInt((event.target as HTMLSelectElement).value)
@@ -240,6 +284,7 @@ onMounted(async () => {
 })
 
 async function submitForm() {
+  if (!validate()) return
   const payload = { ...form }
   if (!hasTranch2.value) { payload.tranch2_pct = null; payload.tranch2_condition = null }
   if (!hasTranch3.value) { payload.tranch3_pct = null; payload.tranch3_condition = null }
