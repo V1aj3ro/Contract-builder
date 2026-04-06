@@ -44,6 +44,16 @@ async def create_contract(data: ContractCreate, db: AsyncSession = Depends(get_d
     await db.refresh(contract)
     return {"id": contract.id, "number": contract.number}
 
+@router.delete("/contracts/{contract_id}")
+async def delete_contract(contract_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Contract).where(Contract.id == contract_id))
+    contract = result.scalar_one_or_none()
+    if not contract:
+        raise HTTPException(status_code=404, detail="Договор не найден")
+    await db.delete(contract)
+    await db.commit()
+    return {"ok": True}
+
 
 @router.get("/contracts/{contract_id}/generate")
 async def generate(contract_id: int, db: AsyncSession = Depends(get_db)):

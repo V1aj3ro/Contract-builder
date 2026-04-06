@@ -13,6 +13,7 @@
           <th>Исполнитель</th>
           <th>Сумма</th>
           <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -28,6 +29,9 @@
               Скачать
             </a>
           </td>
+          <td>
+            <button class="secondary" style="width:auto;padding:4px 12px;color:red;border-color:red" @click="deleteContract(contract.id)">Удалить</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -39,6 +43,13 @@ import { ref, onMounted } from 'vue'
 import api from '@/api/index'
 
 const contracts = ref([])
+
+async function deleteContract(id: number) {
+  if (!confirm('Удалить договор?')) return
+  await api.delete(`/contracts/${id}`)
+  const response = await api.get('/contracts')
+  contracts.value = response.data
+}
 
 onMounted(async () => {
   const response = await api.get('/contracts')

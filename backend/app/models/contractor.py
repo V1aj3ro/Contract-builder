@@ -1,6 +1,7 @@
 from sqlalchemy import String, Boolean, Table, Column, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 # Связующая таблица исполнитель-дисциплина
@@ -17,8 +18,8 @@ class Contractor(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     is_individual: Mapped[bool] = mapped_column(Boolean, default=True)
-    full_name: Mapped[str] = mapped_column(String(255))   # ИП Ершов Дмитрий Игоревич
-    short_name: Mapped[str] = mapped_column(String(255))  # Ершов Д.И.
+    full_name: Mapped[str] = mapped_column(String(255))   
+    short_name: Mapped[str] = mapped_column(String(255))  
     inn: Mapped[str] = mapped_column(String(12))
     ogrn: Mapped[str] = mapped_column(String(15))
     legal_address: Mapped[str] = mapped_column(String(500))
@@ -28,6 +29,7 @@ class Contractor(Base):
     corr_account: Mapped[str] = mapped_column(String(20))
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    works: Mapped[list["ContractorWork"]] = relationship(back_populates="contractor", cascade="all, delete-orphan")
 
     disciplines: Mapped[list["Discipline"]] = relationship(
         secondary=contractor_disciplines,

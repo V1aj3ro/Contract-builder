@@ -21,7 +21,11 @@
           <td>{{ c.inn }}</td>
           <td>{{ c.disciplines.map((d: any) => d.code).join(', ') }}</td>
           <td>{{ c.phone }}</td>
-          <td><button class="secondary" style="width:auto;padding:4px 12px" @click="editContractor(c.id)">Редактировать</button></td>
+          <td>
+            <RouterLink :to="`/contractors/${c.id}`">
+              <button class="secondary" style="width:auto;padding:4px 12px">Открыть</button>
+            </RouterLink>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -106,13 +110,6 @@ function resetForm() {
 async function loadContractors() {
   const response = await api.get('/contractors')
   contractors.value = response.data
-}
-
-async function editContractor(id: number) {
-  const response = await api.get(`/contractors/${id}`)
-  editId.value = id
-  Object.assign(form, response.data)
-  showForm.value = true
 }
 
 async function saveContractor() {

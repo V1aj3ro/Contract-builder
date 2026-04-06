@@ -263,15 +263,16 @@ async function onContractorSelect(event: Event) {
   form.contractor_phone = c.phone || ''
   if (c.discipline_ids && c.discipline_ids.length > 0) {
     try {
-      const worksResponse = await api.get('/disciplines')
-      const allDisciplines = worksResponse.data
-      const contractorDisciplines = allDisciplines.filter((d: any) =>
-        c.discipline_ids.includes(d.id)
-      )
-      const works = contractorDisciplines.flatMap((d: any) => d.works.map((w: any) => `- ${w.text}`))
-      form.works_text = works.join('\n')
+        const contractorResponse = await api.get(`/contractors/${c.id}`)
+        const contractorData = contractorResponse.data
+        const works: string[] = []
+        for (const d of contractorData.disciplines) {
+            const disciplineWorks = contractorData.works_by_discipline[d.id] || []
+            disciplineWorks.forEach((w: any) => works.push(`- ${w.text}`))
+        }
+        form.works_text = works.join('\n')
     } catch(e) {
-      console.error('works error:', e)
+        console.error('works error:', e)
     }
   }
 }

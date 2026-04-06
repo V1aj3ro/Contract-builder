@@ -4,7 +4,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from app.database import AsyncSessionLocal
 from app.models.contractor import Contractor
-from app.models.contract import Discipline
+from app.models.contractor_work import ContractorWork
+from app.models.contract import Discipline, Contract
 from pydantic import BaseModel
 from typing import Optional
 
@@ -29,6 +30,10 @@ class ContractorCreate(BaseModel):
     corr_account: str
     phone: Optional[str] = None
     discipline_ids: list[int] = []
+
+
+class WorkUpsert(BaseModel):
+    text: str
 
 
 @router.get("/contractors")
@@ -58,11 +63,31 @@ async def get_contractor(contractor_id: int, db: AsyncSession = Depends(get_db))
     result = await db.execute(
         select(Contractor)
         .where(Contractor.id == contractor_id)
-        .options(selectinload(Contractor.disciplines))
+        .options(
+            selectinload(Contractor.disciplines),
+            selectinload(Contractor.works).selectinload(ContractorWork.discipline)
+        )
     )
     contractor = result.scalar_one_or_none()
     if not contractor:
         raise HTTPException(status_code=404, detail="Исполнитель не найден")
+
+    # Группируем работы по дисциплинам
+    works_by_discipline: dict = {}
+    for w in contractor.works:
+        did = w.discipline_id
+        if did not in works_by_discipline:
+            works_by_discipline[did] = []
+        works_by_discipline[did].append({"id": w.id, "text": w.text})
+
+    # Активные договоры
+    contracts_result = await db.execute(
+        select(Contract)
+        .where(Contract.contractor_keycloak_id == str(contractor_id))
+        .options(selectinload(Contract.customer))
+    )
+    contracts = contracts_result.scalars().all()
+
     return {
         "id": contractor.id,
         "is_individual": contractor.is_individual,
@@ -77,6 +102,19 @@ async def get_contractor(contractor_id: int, db: AsyncSession = Depends(get_db))
         "corr_account": contractor.corr_account,
         "phone": contractor.phone,
         "discipline_ids": [d.id for d in contractor.disciplines],
+        "disciplines": [{"id": d.id, "code": d.code, "name": d.name} for d in contractor.disciplines],
+        "works_by_discipline": works_by_discipline,
+        "contracts": [
+            {
+                "id": c.id,
+                "number": c.number,
+                "date": c.date,
+                "object_full_name": c.object_full_name,
+                "customer": c.customer.full_name,
+                "amount": c.amount,
+            }
+            for c in contracts
+        ],
     }
 
 
@@ -87,7 +125,19 @@ async def create_contractor(data: ContractorCreate, db: AsyncSession = Depends(g
     contractor = Contractor(**contractor_data)
     if discipline_ids:
         result = await db.execute(select(Discipline).where(Discipline.id.in_(discipline_ids)))
-        contractor.disciplines = result.scalars().all()
+        disciplines = result.scalars().all()
+        contractor.disciplines = disciplines
+        # Копируем типовые работы из справочника
+        for discipline in disciplines:
+            works_result = await db.execute(
+                select(Discipline).where(Discipline.id == discipline.id)
+                .options(selectinload(Discipline.works))
+            )
+            d = works_result.scalar_one()
+            for w in d.works:
+                contractor.works.append(
+                    ContractorWork(discipline_id=discipline.id, text=w.text)
+                )
     db.add(contractor)
     await db.commit()
     await db.refresh(contractor)
@@ -121,5 +171,25 @@ async def deactivate_contractor(contractor_id: int, db: AsyncSession = Depends(g
     if not contractor:
         raise HTTPException(status_code=404, detail="Исполнитель не найден")
     contractor.is_active = False
+    await db.commit()
+    return {"ok": True}
+
+
+@router.post("/contractors/{contractor_id}/works")
+async def add_contractor_work(contractor_id: int, discipline_id: int, data: WorkUpsert, db: AsyncSession = Depends(get_db)):
+    work = ContractorWork(contractor_id=contractor_id, discipline_id=discipline_id, text=data.text)
+    db.add(work)
+    await db.commit()
+    await db.refresh(work)
+    return {"id": work.id, "text": work.text}
+
+
+@router.delete("/contractors/{contractor_id}/works/{work_id}")
+async def delete_contractor_work(contractor_id: int, work_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(ContractorWork).where(ContractorWork.id == work_id))
+    work = result.scalar_one_or_none()
+    if not work:
+        raise HTTPException(status_code=404, detail="Работа не найдена")
+    await db.delete(work)
     await db.commit()
     return {"ok": True}
